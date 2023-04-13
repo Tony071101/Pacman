@@ -45,10 +45,10 @@ public class GameManager : MonoBehaviour
     {
         ResetGhostMultiplier();
 
-        for (int i = 0; i < this.ghosts.Length; i++)
-        {
-            this.ghosts[i].ResetState();
-        }
+        // for (int i = 0; i < this.ghosts.Length; i++)
+        // {
+        //     this.ghosts[i].ResetState();
+        // }
 
         this.pacman.ResetState();
     }
@@ -106,7 +106,9 @@ public class GameManager : MonoBehaviour
 
     public void PowerPelletEat(PowerPellet pellet){
         // Change Ghost's state
-
+        for(int i = 0; i < this.ghosts.Length; i++){
+            this.ghosts[i].scared.Enable(pellet.duration);
+        }
         PelletEat(pellet);
         CancelInvoke();
         Invoke(nameof(ResetGhostMultiplier), pellet.duration);
