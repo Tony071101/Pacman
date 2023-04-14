@@ -502,7 +502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c6863a9065aa8243846858a3c197203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  speed: 6
   speedMultiplier: 1
   initialDirection: {x: 0, y: 0}
   wallLayer:
