@@ -9,6 +9,8 @@ public class GhostScared : GhostBehaviour
     public SpriteRenderer eyes;
     public SpriteRenderer blueState;
     public SpriteRenderer whiteState;
+
+    public AudioSource ghostScared;
     public bool eaten { get; private set; }
 
     public override void Enable(float duration)
@@ -19,7 +21,7 @@ public class GhostScared : GhostBehaviour
         this.eyes.enabled = false;
         this.blueState.enabled = true;
         this.whiteState.enabled = false;
-
+        ghostScared.Play();
         Invoke(nameof(Flash), duration / 2.0f);
     }
 
@@ -31,6 +33,7 @@ public class GhostScared : GhostBehaviour
         this.eyes.enabled = true;
         this.blueState.enabled = false;
         this.whiteState.enabled = false;
+        ghostScared.Stop();
     }
 
     private void Flash()
