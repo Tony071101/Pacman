@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
     public AudioSource munch2;
     public AudioSource gameOver;
     public AudioSource ghostEat;
+    public AudioSource victory;
     public Text textScore;
     public Text textHighScore;
     // Start is called before the first frame update
@@ -31,7 +32,8 @@ public class GameManager : MonoBehaviour
         {
             NewGame();
         }
-        if(this.score > PlayerPrefs.GetInt("Your High Score")){
+        if (this.score > PlayerPrefs.GetInt("Your High Score"))
+        {
             PlayerPrefs.SetInt("Your High Score", this.score);
         }
     }
@@ -47,6 +49,8 @@ public class GameManager : MonoBehaviour
 
     private void NewRound()
     {
+        gameStart.Play();
+        victory.Stop();
         foreach (Transform pellet in this.pellets)
         {
             pellet.gameObject.SetActive(true);
@@ -122,8 +126,14 @@ public class GameManager : MonoBehaviour
         pellet.gameObject.SetActive(false);
         if (!CheckPellet())
         {
-            this.gameObject.SetActive(false);
-            Invoke(nameof(NewRound), 3.0f);
+            victory.Play();
+            gameStart.Stop();
+            for (int i = 0; i < this.ghosts.Length; i++)
+            {
+                this.ghosts[i].gameObject.SetActive(false);
+            }
+            this.pacman.gameObject.SetActive(false);
+            Invoke(nameof(NewRound), 6.0f);
         }
     }
 
