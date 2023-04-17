@@ -2,6 +2,7 @@
 //using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class GameManager : MonoBehaviour
     public AudioSource victory;
     public Text textScore;
     public Text textHighScore;
+    public static bool gamePause = false;
+    public GameObject pauseMenu;
     // Start is called before the first frame update
     private void Start()
     {
@@ -35,6 +38,13 @@ public class GameManager : MonoBehaviour
         if (this.score > PlayerPrefs.GetInt("Your High Score"))
         {
             PlayerPrefs.SetInt("Your High Score", this.score);
+        }
+        if(Input.GetKeyDown(KeyCode.Escape)){
+            if(gamePause){
+                Resume();
+            }else{
+                Pause();
+            }
         }
     }
 
@@ -164,5 +174,34 @@ public class GameManager : MonoBehaviour
     private void ResetGhostMultiplier()
     {
         this.ghostMultiplier = 4;
+    }
+
+    public void Resume(){
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1.0f;
+        gamePause = false;
+    }
+
+    public void Pause(){
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0f;
+        gamePause = true;
+    }
+
+    public void SaveGame(){
+        SaveSystem.SavePacman(this);
+        // Time.timeScale = 1.0f;
+        // SceneManager.LoadScene("");
+    }
+
+    public void LoadGame(){
+        PacmanDataClass data = SaveSystem.LoadPacman();
+
+        lives = data.lives;
+        score = data.score;
+        Vector2 position;
+        position.x = data.pos[0];
+        position.y = data.pos[1];
+        pacman.transform.position = position;
     }
 }
