@@ -299,6 +299,12 @@ MonoBehaviour:
   - {fileID: 2111825096}
   pacman: {fileID: 2073310373}
   pellets: {fileID: 1366474941}
+  data:
+    lives: 0
+    score: 0
+    pos: {x: 0, y: 0, z: 0}
+    rotationAngle: {x: 0, y: 0}
+    pellets: {fileID: 0}
   gameStart: {fileID: 339415446}
   death: {fileID: 339415448}
   munch2: {fileID: 339415447}

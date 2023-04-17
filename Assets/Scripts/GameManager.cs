@@ -1,14 +1,17 @@
 //using System.Collections;
-//using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
     public Ghost[] ghosts;
     public Pacman pacman;
     public Transform pellets;
+    public PacmanDataClass data;
     private int highScore { get; set; }
     public int score { get; private set; }
     public int lives { get; private set; }
@@ -39,10 +42,14 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetInt("Your High Score", this.score);
         }
-        if(Input.GetKeyDown(KeyCode.Escape)){
-            if(gamePause){
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (gamePause)
+            {
                 Resume();
-            }else{
+            }
+            else
+            {
                 Pause();
             }
         }
@@ -176,32 +183,40 @@ public class GameManager : MonoBehaviour
         this.ghostMultiplier = 4;
     }
 
-    public void Resume(){
+    public void Resume()
+    {
         pauseMenu.SetActive(false);
         Time.timeScale = 1.0f;
         gamePause = false;
     }
 
-    public void Pause(){
+    public void Pause()
+    {
         pauseMenu.SetActive(true);
         Time.timeScale = 0f;
         gamePause = true;
     }
 
-    public void SaveGame(){
-        SaveSystem.SavePacman(this);
+    public void SaveGame()
+    {
+        data = new PacmanDataClass();
+        data.lives = this.lives;
+        data.score = this.score;
+        data.pos = pacman.transform.position;
+        data.rotationAngle = pacman.movement.direction;
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(Application.dataPath + "/PacmanData.json", json);
         // Time.timeScale = 1.0f;
         // SceneManager.LoadScene("");
     }
 
-    public void LoadGame(){
-        PacmanDataClass data = SaveSystem.LoadPacman();
-
-        lives = data.lives;
-        score = data.score;
-        Vector2 position;
-        position.x = data.pos[0];
-        position.y = data.pos[1];
-        pacman.transform.position = position;
+    public void LoadGame()
+    {
+        string json = File.ReadAllText(Application.dataPath + "/PacmanData.json");
+        data = JsonUtility.FromJson<PacmanDataClass>(json);
+        this.lives = data.lives;
+        this.score = data.score;
+        pacman.transform.position = data.pos;
+        pacman.movement.SetDirection(data.rotationAngle);
     }
 }
