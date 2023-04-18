@@ -304,7 +304,8 @@ MonoBehaviour:
     score: 0
     pos: {x: 0, y: 0, z: 0}
     rotationAngle: {x: 0, y: 0}
-    pellets: {fileID: 0}
+    eatenPelletPositions: []
+    ghostData: []
   gameStart: {fileID: 339415446}
   death: {fileID: 339415448}
   munch2: {fileID: 339415447}

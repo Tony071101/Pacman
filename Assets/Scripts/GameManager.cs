@@ -1,3 +1,4 @@
+using System.Linq;
 //using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine.UI;
 using System.IO;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
+using System.Security.Cryptography;
+using System.Text;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,6 +29,9 @@ public class GameManager : MonoBehaviour
     public Text textHighScore;
     public static bool gamePause = false;
     public GameObject pauseMenu;
+    private List<PelletData> collectedPelletsData = new List<PelletData>();
+    private static byte[] key = { 0x48, 0x7A, 0x4E, 0x71, 0x6B, 0x57, 0x28, 0x3A, 0x65, 0x52, 0x59, 0x34, 0x79, 0x46, 0x58, 0x5A };
+    private static byte[] iv = { 0x50, 0x2A, 0x3D, 0x29, 0x72, 0x35, 0x47, 0x67, 0x39, 0x58, 0x49, 0x54, 0x43, 0x56, 0x30, 0x2B };
     // Start is called before the first frame update
     private void Start()
     {
@@ -141,6 +147,9 @@ public class GameManager : MonoBehaviour
         munch2.Play();
         SetScore(this.score + pellet.points);
         pellet.gameObject.SetActive(false);
+        PelletData pelletData = new PelletData();
+        pelletData.pos = pellet.transform.position;
+        collectedPelletsData.Add(pelletData);
         if (!CheckPellet())
         {
             victory.Play();
@@ -204,19 +213,102 @@ public class GameManager : MonoBehaviour
         data.score = this.score;
         data.pos = pacman.transform.position;
         data.rotationAngle = pacman.movement.direction;
+        data.eatenPelletPositions = new List<Vector3>();
+        foreach (Transform pellet in this.pellets)
+        {
+            if (!pellet.gameObject.activeSelf)
+            {
+                data.eatenPelletPositions.Add(pellet.transform.position);
+            }
+        }
+        foreach (Ghost ghost in ghosts)
+        {
+            GhostData ghostData = new GhostData();
+            ghostData.position = ghost.transform.position;
+            ghostData.direction = ghost.movement.direction;
+            data.ghostData.Add(ghostData);
+        }
         string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(Application.dataPath + "/PacmanData.json", json);
+        byte[] encryptedBytes = EncryptStringToBytes_Aes(json, key, iv);
+        File.WriteAllBytes(Application.dataPath + "/PacmanData.json", encryptedBytes);
         // Time.timeScale = 1.0f;
         // SceneManager.LoadScene("");
     }
 
     public void LoadGame()
     {
-        string json = File.ReadAllText(Application.dataPath + "/PacmanData.json");
+        byte[] encryptedBytes = File.ReadAllBytes(Application.dataPath + "/PacmanData.json");
+        string json = DecryptStringFromBytes_Aes(encryptedBytes, key, iv);
         data = JsonUtility.FromJson<PacmanDataClass>(json);
         this.lives = data.lives;
         this.score = data.score;
         pacman.transform.position = data.pos;
         pacman.movement.SetDirection(data.rotationAngle);
+        for (int i = 0; i < ghosts.Length; i++)
+        {
+            ghosts[i].transform.position = data.ghostData[i].position;
+            ghosts[i].movement.SetDirection(data.ghostData[i].direction);
+        }
+        foreach (Transform pellet in this.pellets)
+        {
+            if (data.eatenPelletPositions.Contains(pellet.transform.position))
+            {
+                pellet.gameObject.SetActive(false);
+            }
+            else
+            {
+                pellet.gameObject.SetActive(true);
+            }
+        }
+    }
+    private byte[] EncryptStringToBytes_Aes(string plainText, byte[] key, byte[] iv)
+    {
+        byte[] encrypted;
+        using (Aes aes = Aes.Create())
+        {
+            aes.Key = key;
+            aes.IV = iv;
+
+            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                {
+                    using (StreamWriter sw = new StreamWriter(cs))
+                    {
+                        sw.Write(plainText);
+                    }
+                    encrypted = ms.ToArray();
+                }
+            }
+        }
+
+        return encrypted;
+    }
+
+    private string DecryptStringFromBytes_Aes(byte[] cipherText, byte[] key, byte[] iv)
+    {
+        string decrypted;
+        using (Aes aes = Aes.Create())
+        {
+            aes.Key = key;
+            aes.IV = iv;
+
+            ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+            using (MemoryStream ms = new MemoryStream(cipherText))
+            {
+                using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                {
+                    using (StreamReader sr = new StreamReader(cs))
+                    {
+                        decrypted = sr.ReadToEnd();
+                    }
+                }
+            }
+        }
+
+        return decrypted;
     }
 }
