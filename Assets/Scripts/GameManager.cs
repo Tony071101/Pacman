@@ -226,6 +226,7 @@ public class GameManager : MonoBehaviour
             GhostData ghostData = new GhostData();
             ghostData.position = ghost.transform.position;
             ghostData.direction = ghost.movement.direction;
+            ghostData.currentState = GetCurrentState(ghost);
             data.ghostData.Add(ghostData);
         }
         string json = JsonUtility.ToJson(data, true);
@@ -248,6 +249,7 @@ public class GameManager : MonoBehaviour
         {
             ghosts[i].transform.position = data.ghostData[i].position;
             ghosts[i].movement.SetDirection(data.ghostData[i].direction);
+            SetCurrentState(ghosts[i], data.ghostData[i].currentState);
         }
         foreach (Transform pellet in this.pellets)
         {
@@ -288,6 +290,7 @@ public class GameManager : MonoBehaviour
     }
 
     private string DecryptStringFromBytes_Aes(byte[] cipherText, byte[] key, byte[] iv)
+
     {
         string decrypted;
         using (Aes aes = Aes.Create())
@@ -310,5 +313,41 @@ public class GameManager : MonoBehaviour
         }
 
         return decrypted;
+    }
+
+    private int GetCurrentState(Ghost ghost)
+    {
+        if (ghost.scatter.enabled) return 0;
+        if (ghost.home.enabled) return 1;
+        if (ghost.scared.enabled) return 2;
+        if (ghost.chase.enabled) return 3;
+        return -1;
+    }
+
+    private void SetCurrentState(Ghost ghost, int state)
+    {
+        ghost.ResetStateOnly();
+        switch (state)
+        {
+            case 0:
+                ghost.scatter.Enable();
+                break;
+            case 1:
+                if (ghost.home != ghost.initialBehaviour)
+                {
+                    ghost.home.Enable();
+                }
+                if (ghost.initialBehaviour != null)
+                {
+                    ghost.initialBehaviour.Enable();
+                }
+                break;
+            case 2:
+                ghost.scared.Enable();
+                break;
+            case 3:
+                ghost.chase.Enable();
+                break;
+        }
     }
 }

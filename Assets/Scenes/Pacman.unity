@@ -304,8 +304,8 @@ MonoBehaviour:
     score: 0
     pos: {x: 0, y: 0, z: 0}
     rotationAngle: {x: 0, y: 0}
-    eatenPelletPositions: []
     ghostData: []
+    eatenPelletPositions: []
   gameStart: {fileID: 339415446}
   death: {fileID: 339415448}
   munch2: {fileID: 339415447}
@@ -4934,7 +4934,7 @@ PrefabInstance:
       objectReference: {fileID: 1568495388}
     - target: {fileID: 5799341960265398158, guid: d9177aafc61319e43a969a8229b71020, type: 3}
       propertyPath: duration
-      value: 7
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5799341960265398158, guid: d9177aafc61319e43a969a8229b71020, type: 3}
       propertyPath: m_Enabled
@@ -11570,7 +11570,7 @@ PrefabInstance:
       objectReference: {fileID: 1568495388}
     - target: {fileID: 4130852369200079513, guid: 0ec51ab251f52e049a0c546bb3bde276, type: 3}
       propertyPath: duration
-      value: 12
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4130852369200079513, guid: 0ec51ab251f52e049a0c546bb3bde276, type: 3}
       propertyPath: m_Enabled

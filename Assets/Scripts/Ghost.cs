@@ -11,6 +11,7 @@ public class Ghost : MonoBehaviour
     public GhostScatter scatter { get; private set; }
     public GhostBehaviour initialBehaviour;
     public Transform target;
+
     public int points = 200;
     private void Awake()
     {
@@ -34,12 +35,6 @@ public class Ghost : MonoBehaviour
         this.scared.Disable();
         this.chase.Disable();
         this.scatter.Enable();
-        // if(this.scatter != this.initialBehaviour){
-        //     this.scatter.Disable();
-        // }
-        // else if(this.scatter == this.initialBehaviour){
-        //     this.scatter.Enable();
-        // }
         if (this.home != this.initialBehaviour)
         {
             this.home.Disable();
@@ -48,9 +43,14 @@ public class Ghost : MonoBehaviour
         {
             this.initialBehaviour.Enable();
         }
-        // else if(this.home == this.initialBehaviour){
-        //     this.home.Enable();
-        // }
+    }
+
+    public void ResetStateOnly()
+    {
+        this.scared.Disable();
+        this.chase.Disable();
+        this.scatter.Disable();
+        this.home.Disable();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -67,5 +67,6 @@ public class Ghost : MonoBehaviour
             }
         }
     }
+
 
 }

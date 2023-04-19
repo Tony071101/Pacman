@@ -7,7 +7,7 @@ public class GhostHome : GhostBehaviour
     public Transform inside;
     public Transform outside;
 
-    private void OnEnable() {
+    public void OnEnable() {
         StopAllCoroutines();
     }
 
@@ -17,7 +17,7 @@ public class GhostHome : GhostBehaviour
         }
     }
 
-    private void OnDisable() {
+    public void OnDisable() {
         if(this.gameObject.activeSelf){
             StartCoroutine(ExitTransition());        
         }

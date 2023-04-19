@@ -22,11 +22,12 @@ public class PacmanDataClass
 public class PelletData
 {
     public Vector3 pos; 
-    public bool isEaten;// Position of the pellet
+    public bool isEaten;
 }
 [System.Serializable]
 public class GhostData
 {
     public Vector3 position;
     public Vector2 direction;
+    public int currentState;
 }

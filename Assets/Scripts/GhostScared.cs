@@ -16,7 +16,6 @@ public class GhostScared : GhostBehaviour
     public override void Enable(float duration)
     {
         base.Enable(duration);
-
         this.body.enabled = false;
         this.eyes.enabled = false;
         this.blueState.enabled = true;
@@ -28,7 +27,6 @@ public class GhostScared : GhostBehaviour
     public override void Disable()
     {
         base.Disable();
-
         this.body.enabled = true;
         this.eyes.enabled = true;
         this.blueState.enabled = false;
@@ -46,15 +44,12 @@ public class GhostScared : GhostBehaviour
         }
     }
 
-    private void Eaten(){
+    public void Eaten(){
         this.eaten = true;
-
         Vector3 pos = this.ghost.home.inside.position;
         pos.z = this.transform.position.z;
         this.ghost.transform.position = pos;
-
         this.ghost.home.Enable(this.duration);
-
         this.body.enabled = false;
         this.eyes.enabled = true;
         this.blueState.enabled = false;
@@ -70,7 +65,7 @@ public class GhostScared : GhostBehaviour
 
     private void OnDisable() {
         this.ghost.movement.speedMultiplier = 1f;
-        eaten = false;
+        this.eaten = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
