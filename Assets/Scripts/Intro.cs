@@ -14,6 +14,10 @@ public class Intro : MonoBehaviour
     {
         SceneManager.LoadScene("Pacman");
     }
+    public void Continue()
+    {
+        SceneManager.LoadScene("Pacman");
+    }
     public void Quit()
     {
         Application.Quit();

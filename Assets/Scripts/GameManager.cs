@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     public Text live;
     public Text up;
     public Text level;
-    private int round = 1;
+    private int round;
     public static bool gamePause = false;
     public GameObject pauseMenu;
     private List<PelletData> collectedPelletsData = new List<PelletData>();
@@ -72,10 +72,10 @@ public class GameManager : MonoBehaviour
     {
         gameStart.Play();
         textHighScore.text = "High Score: " + PlayerPrefs.GetInt("Your High Score").ToString();
-        level.text = round + "UP";
         SetScore(0);
         SetLives(3);
         NewRound();
+        round = 1;
     }
 
     private void NewRound()
@@ -269,12 +269,15 @@ public class GameManager : MonoBehaviour
         this.round = data.level;
         this.lives = data.lives;
         this.score = data.score;
-        pacman.transform.position = data.pos;
-        pacman.movement.SetDirection(data.rotationAngle);
+        level.text = data.level + "UP";
+        textScore.text = "Score: " + data.score;
+        live.text = "Live: " + data.lives;
+        this.pacman.transform.position = data.pos;
+        this.pacman.movement.SetDirection(data.rotationAngle);
         for (int i = 0; i < ghosts.Length; i++)
         {
-            ghosts[i].transform.position = data.ghostData[i].position;
-            ghosts[i].movement.SetDirection(data.ghostData[i].direction);
+            this.ghosts[i].transform.position = data.ghostData[i].position;
+            this.ghosts[i].movement.SetDirection(data.ghostData[i].direction);
             SetCurrentState(ghosts[i], data.ghostData[i].currentState);
         }
         foreach (Transform pellet in this.pellets)
