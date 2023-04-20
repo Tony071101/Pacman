@@ -47,6 +47,7 @@ public class Ghost : MonoBehaviour
 
     public void ResetStateOnly()
     {
+        this.gameObject.SetActive(true);
         this.scared.Disable();
         this.chase.Disable();
         this.scatter.Disable();

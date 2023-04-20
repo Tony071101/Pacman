@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class PacmanDataClass
 {
-    public int lives, score;
+    public int lives, score, level;
     public Vector3 pos;
     public Vector2 rotationAngle;
     // public List<PelletData> pelletsData;

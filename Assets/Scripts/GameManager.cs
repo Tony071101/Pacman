@@ -25,8 +25,13 @@ public class GameManager : MonoBehaviour
     public AudioSource gameOver;
     public AudioSource ghostEat;
     public AudioSource victory;
+    public AudioSource newGame;
     public Text textScore;
     public Text textHighScore;
+    public Text live;
+    public Text up;
+    public Text level;
+    private int round = 1;
     public static bool gamePause = false;
     public GameObject pauseMenu;
     private List<PelletData> collectedPelletsData = new List<PelletData>();
@@ -35,6 +40,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        newGame.Stop();
         NewGame();
     }
     private void Update()
@@ -43,6 +49,7 @@ public class GameManager : MonoBehaviour
         if (this.lives <= 0 && Input.anyKeyDown)
         {
             NewGame();
+            
         }
         if (this.score > PlayerPrefs.GetInt("Your High Score"))
         {
@@ -65,6 +72,7 @@ public class GameManager : MonoBehaviour
     {
         gameStart.Play();
         textHighScore.text = "High Score: " + PlayerPrefs.GetInt("Your High Score").ToString();
+        level.text = round + "UP";
         SetScore(0);
         SetLives(3);
         NewRound();
@@ -72,6 +80,9 @@ public class GameManager : MonoBehaviour
 
     private void NewRound()
     {
+        level.text = round + "UP";
+        round++;
+        up.gameObject.SetActive(false);
         gameStart.Play();
         victory.Stop();
         foreach (Transform pellet in this.pellets)
@@ -104,6 +115,7 @@ public class GameManager : MonoBehaviour
     private void SetLives(int lives)
     {
         this.lives = lives;
+        live.text = "Live: " + this.lives;
     }
 
     private void GameOver()
@@ -115,6 +127,9 @@ public class GameManager : MonoBehaviour
             this.ghosts[i].gameObject.SetActive(false);
         }
         highScore = this.score;
+        live.text = "Live: 0";
+        up.gameObject.SetActive(true);
+        up.text = "Game Over";
         this.pacman.gameObject.SetActive(false);
     }
 
@@ -159,6 +174,9 @@ public class GameManager : MonoBehaviour
                 this.ghosts[i].gameObject.SetActive(false);
             }
             this.pacman.gameObject.SetActive(false);
+            up.gameObject.SetActive(true);
+            up.text = "Victory";
+            
             Invoke(nameof(NewRound), 6.0f);
         }
     }
@@ -194,6 +212,7 @@ public class GameManager : MonoBehaviour
 
     public void Resume()
     {
+        gameStart.volume= 0.5f;
         pauseMenu.SetActive(false);
         Time.timeScale = 1.0f;
         gamePause = false;
@@ -201,9 +220,16 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
+        gameStart.volume= 0.1f;
         pauseMenu.SetActive(true);
         Time.timeScale = 0f;
         gamePause = true;
+    }
+
+    
+    public void Return(){
+        Time.timeScale = 1.0f;
+        SceneManager.LoadScene("Intro");
     }
 
     public void SaveGame()
@@ -211,6 +237,7 @@ public class GameManager : MonoBehaviour
         data = new PacmanDataClass();
         data.lives = this.lives;
         data.score = this.score;
+        data.level = this.round;
         data.pos = pacman.transform.position;
         data.rotationAngle = pacman.movement.direction;
         data.eatenPelletPositions = new List<Vector3>();
@@ -232,8 +259,6 @@ public class GameManager : MonoBehaviour
         string json = JsonUtility.ToJson(data, true);
         byte[] encryptedBytes = EncryptStringToBytes_Aes(json, key, iv);
         File.WriteAllBytes(Application.dataPath + "/PacmanData.json", encryptedBytes);
-        // Time.timeScale = 1.0f;
-        // SceneManager.LoadScene("");
     }
 
     public void LoadGame()
@@ -241,6 +266,7 @@ public class GameManager : MonoBehaviour
         byte[] encryptedBytes = File.ReadAllBytes(Application.dataPath + "/PacmanData.json");
         string json = DecryptStringFromBytes_Aes(encryptedBytes, key, iv);
         data = JsonUtility.FromJson<PacmanDataClass>(json);
+        this.round = data.level;
         this.lives = data.lives;
         this.score = data.score;
         pacman.transform.position = data.pos;
@@ -333,14 +359,7 @@ public class GameManager : MonoBehaviour
                 ghost.scatter.Enable();
                 break;
             case 1:
-                if (ghost.home != ghost.initialBehaviour)
-                {
-                    ghost.home.Enable();
-                }
-                if (ghost.initialBehaviour != null)
-                {
-                    ghost.initialBehaviour.Enable();
-                }
+                ghost.home.Enable();
                 break;
             case 2:
                 ghost.scared.Enable();
