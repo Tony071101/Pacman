@@ -1,5 +1,7 @@
-# 1st commit: drawing Tilemap
-# 2nd commit: Create and coding behaviour for Pacman
-# 3rd commit: Create and coding behaviour for Ghosts(Scatter/Home/Chase)
-# 4th commit: Coding Scared behaviour for Ghosts
-# 5th commit: Aduio and DataSave(PlayerPrefs)
+# PACMAN GAME
+# Drawing Tilemap
+# Create and coding behaviour for Pacman
+# Create and coding behaviour for Ghosts(Scatter/Home/Chase)
+# Coding Scared behaviour for Ghosts
+# Audio and High Score save(PlayerPrefs)
+# Save and load game state using JSON(encrypt/decrypt)
